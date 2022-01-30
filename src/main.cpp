@@ -1,9 +1,9 @@
 #include <glad/glad.h>
+#include "Resources/ResourceManager.h"
 #include <GLFW/glfw3.h>
+#include "Renderer/ShaderProgram.h"
 #include <iostream>
 #include <string>
-#include "Renderer/ShaderProgram.h"
-#include "Resources/ResourceManager.h"
 
 int g_windowSizeX = 640;
 int g_windowSizeY = 480;
@@ -18,6 +18,12 @@ GLfloat colors[] = {
     1.f, 0.f, 0.f,
     0.f, 1.f, 0.f,
     0.f, 0.f, 1.f
+};
+
+GLfloat textureCoords[] = {
+    0.5f, 1.f, 
+    1.f, 0.f, 
+    0.f, 0.f, 
 };
 
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
@@ -37,7 +43,6 @@ void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int
 
 int main(int argc, char** argv)
 {
-    
     GLFWwindow* pWindow;
 
     /* Initialize the library */
@@ -83,6 +88,8 @@ int main(int argc, char** argv)
             std::cerr << "Can't create shader program: " << "Default Shader" << std::endl;
             return -1;
         }
+
+        resourceManager.LoadTexture("DefaultTexture", "res/textures/map_16x16.png");
 
         GLuint points_vbo = 0;
         glGenBuffers(1, &points_vbo);
