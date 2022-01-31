@@ -5,9 +5,7 @@
 #include "Renderer/Texture2D.h"
 #include <iostream>
 #include <string>
-
-int g_windowSizeX = 640;
-int g_windowSizeY = 480;
+#include <glm/vec2.hpp>
 
 GLfloat points[] = {
     0.0f, 0.5f, 0.0f,
@@ -19,6 +17,7 @@ GLfloat colors[] = {
     0.f, 1.f, 0.f,
     0.f, 0.f, 1.f};
 
+
 GLfloat textureCoords[] = {
     0.5f,
     1.f,
@@ -28,11 +27,13 @@ GLfloat textureCoords[] = {
     0.f,
 };
 
+glm::ivec2 g_WindowSize(640, 480);
+
 void glfwWindowSizeCallback(GLFWwindow *pWindow, int width, int height)
 {
-  g_windowSizeX = width;
-  g_windowSizeY = height;
-  glViewport(0, 0, g_windowSizeX, g_windowSizeY);
+  g_WindowSize.x = width;
+  g_WindowSize.y = height;
+  glViewport(0, 0, g_WindowSize.x, g_WindowSize.y);
 }
 
 void glfwKeyCallback(GLFWwindow *pWindow, int key, int scancode, int action, int mode)
