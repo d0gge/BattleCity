@@ -46,7 +46,7 @@ std::shared_ptr<Renderer::ShaderProgram> ResourceManager::LoadShaders(const std:
     return nullptr;
   }
 
- std::shared_ptr<Renderer::ShaderProgram>& newShader = m_ShaderPrograms.emplace(shaderName, std::make_shared<Renderer::ShaderProgram>(vertexString, fragmentString)).first->second;
+ std::shared_ptr<Renderer::ShaderProgram>& newShader = m_ShaderProgramsMap.emplace(shaderName, std::make_shared<Renderer::ShaderProgram>(vertexString, fragmentString)).first->second;
 
  if (newShader->isCompiled())
  {
@@ -63,8 +63,8 @@ std::shared_ptr<Renderer::ShaderProgram> ResourceManager::LoadShaders(const std:
 
 std::shared_ptr<Renderer::ShaderProgram> ResourceManager::GetShaderProgram(const std::string& shaderName) 
 {
-  ShaderProgramsMap::const_iterator it = m_ShaderPrograms.find(shaderName);
-  if (it != m_ShaderPrograms.end())
+  ShaderProgramsMap::const_iterator it = m_ShaderProgramsMap.find(shaderName);
+  if (it != m_ShaderProgramsMap.end())
   {
     return it->second;
   }
@@ -98,4 +98,15 @@ std::shared_ptr<Renderer::Texture2D> ResourceManager::LoadTexture(const std::str
 
   stbi_image_free(pixels);
   return newTexture;
+}
+
+std::shared_ptr<Renderer::Texture2D> ResourceManager::GetTexture(const std::string& textureName) const
+{
+  TexturesMap::const_iterator it = m_TexturesMap.find(textureName);
+  if (it != m_TexturesMap.end())
+  {
+    return it->second;
+  }
+
+  return nullptr;
 }

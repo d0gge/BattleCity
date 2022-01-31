@@ -24,7 +24,7 @@ public:
   std::shared_ptr<Renderer::ShaderProgram> GetShaderProgram(const std::string& shaderName);
 
   std::shared_ptr<Renderer::Texture2D> LoadTexture(const std::string& textureName, const std::string& texturePath);
-  std::shared_ptr<Renderer::Texture2D> GetTexture(const std::string& textureName);
+  std::shared_ptr<Renderer::Texture2D> GetTexture(const std::string& textureName) const;
 
 
 private:
@@ -34,7 +34,7 @@ private:
   typedef std::map<const std::string, std::shared_ptr<Renderer::ShaderProgram>> ShaderProgramsMap;
   typedef std::map<const std::string, std::shared_ptr<Renderer::Texture2D>> TexturesMap;
   TexturesMap m_TexturesMap;
-  ShaderProgramsMap m_ShaderPrograms;
+  ShaderProgramsMap m_ShaderProgramsMap;
 
   std::string m_Path; 
 };
