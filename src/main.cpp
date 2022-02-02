@@ -60,7 +60,7 @@ int main(int argc, char **argv)
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   /* Create a windowed mode window and its OpenGL context */
-  pWindow = glfwCreateWindow(g_windowSizeX, g_windowSizeY, "Battlecity", nullptr, nullptr);
+  pWindow = glfwCreateWindow(g_WindowSize.x, g_WindowSize.y, "Battlecity", nullptr, nullptr);
   if (!pWindow)
   {
     glfwTerminate();
