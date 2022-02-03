@@ -1,42 +1,33 @@
-#include <glad/glad.h>
+#include "Renderer/ShaderProgram.h"
+#include "Renderer/Sprite.h"
+#include "Renderer/Texture2D.h"
 #include "Resources/ResourceManager.h"
 #include <GLFW/glfw3.h>
-#include "Renderer/ShaderProgram.h"
-#include "Renderer/Texture2D.h"
+#include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 #include <iostream>
 #include <string>
-#include <glm/vec2.hpp>
 
-GLfloat points[] = {
-    0.0f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f};
+GLfloat points[] = {0.0f, 50.f, 0.0f, 50.f, -50.f, 0.0f, -50.f, -50.f, 0.0f};
 
-GLfloat colors[] = {
-    1.f, 0.f, 0.f,
-    0.f, 1.f, 0.f,
-    0.f, 0.f, 1.f};
-
+GLfloat colors[] = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f};
 
 GLfloat textureCoords[] = {
-    0.5f,
-    1.f,
-    1.f,
-    0.f,
-    0.f,
-    0.f,
+  0.5f, 1.f, 1.f, 0.f, 0.f, 0.f,
 };
 
 glm::ivec2 g_WindowSize(640, 480);
 
-void glfwWindowSizeCallback(GLFWwindow *pWindow, int width, int height)
+void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
   g_WindowSize.x = width;
   g_WindowSize.y = height;
   glViewport(0, 0, g_WindowSize.x, g_WindowSize.y);
 }
 
-void glfwKeyCallback(GLFWwindow *pWindow, int key, int scancode, int action, int mode)
+void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mode)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
   {
@@ -44,9 +35,9 @@ void glfwKeyCallback(GLFWwindow *pWindow, int key, int scancode, int action, int
   }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-  GLFWwindow *pWindow;
+  GLFWwindow* pWindow;
 
   /* Initialize the library */
   if (!glfwInit())
@@ -85,7 +76,8 @@ int main(int argc, char **argv)
   glClearColor(0, 0, 0, 1);
   {
     ResourceManager resourceManager(argv[0]);
-    auto pDefaultShaderProgram = resourceManager.LoadShaders("DefaultShader", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
+    auto pDefaultShaderProgram =
+      resourceManager.LoadShaders("DefaultShader", "res/shaders/vertex.txt", "res/shaders/fragment.txt");
     if (!pDefaultShaderProgram->isCompiled())
     {
       std::cerr << "Can't create shader program: "
@@ -93,7 +85,17 @@ int main(int argc, char **argv)
       return -1;
     }
 
+    auto pSpriteShaderProgram =
+      resourceManager.LoadShaders("SpriteShader", "res/shaders/vSprite.txt", "res/shaders/fSprite.txt");
+    if (!pSpriteShaderProgram->isCompiled())
+    {
+      std::cerr << "Can't create shader program: "
+                << "Default Shader" << std::endl;
+      return -1;
+    }
     auto texture = resourceManager.LoadTexture("DefaultTexture", "res/textures/map_16x16.png");
+    auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTexture", "SpriteShader", 50, 100);
+    pSprite->SetPosition(glm::vec2(200, 100));
 
     GLuint points_vbo = 0;
     glGenBuffers(1, &points_vbo);
@@ -128,6 +130,21 @@ int main(int argc, char **argv)
 
     pDefaultShaderProgram->use();
     pDefaultShaderProgram->SetInt("tex", 0);
+
+    glm::mat4 modelMatrix_1 = glm::mat4(1.f);
+    modelMatrix_1 = glm::translate(modelMatrix_1, glm::vec3(50.f, 50.f, 0.f));
+
+    glm::mat4 modelMatrix_2 = glm::mat4(1.f);
+    modelMatrix_2 = glm::translate(modelMatrix_2, glm::vec3(590.f, 50.f, 0.f));
+
+    glm::mat4 projectionMatrix =
+      glm::ortho(0.f, static_cast<float>(g_WindowSize.x), 0.f, static_cast<float>(g_WindowSize.y), -100.f, 100.f);
+
+    pDefaultShaderProgram->SetMatrix4("projectionMatrix", projectionMatrix);
+    pSpriteShaderProgram->use();
+    pSpriteShaderProgram->SetInt("tex", 0);
+    pSpriteShaderProgram->SetMatrix4("projectionMatrix", projectionMatrix);
+
     while (!glfwWindowShouldClose(pWindow))
     {
       /* Render here */
@@ -136,8 +153,14 @@ int main(int argc, char **argv)
       pDefaultShaderProgram->use();
       glBindVertexArray(vao);
       texture->Bind();
+
+      pDefaultShaderProgram->SetMatrix4("modelMatrix", modelMatrix_1);
       glDrawArrays(GL_TRIANGLES, 0, 3);
 
+      pDefaultShaderProgram->SetMatrix4("modelMatrix", modelMatrix_2);
+      glDrawArrays(GL_TRIANGLES, 0, 3);
+
+      pSprite->Render();
       /* Swap front and back buffers */
       glfwSwapBuffers(pWindow);
 
