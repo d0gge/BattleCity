@@ -9,6 +9,7 @@
 #include <glm/vec2.hpp>
 #include <iostream>
 #include <string>
+#include <vector>
 
 GLfloat points[] = {0.0f, 50.f, 0.0f, 50.f, -50.f, 0.0f, -50.f, -50.f, 0.0f};
 
@@ -94,7 +95,12 @@ int main(int argc, char** argv)
       return -1;
     }
     auto texture = resourceManager.LoadTexture("DefaultTexture", "res/textures/map_16x16.png");
-    auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTexture", "SpriteShader", 50, 100);
+    std::vector<std::string> subTexturesNames = {
+      "block",   "topBlock",      "bottomBlock",     "leftBlock",        "rightBlock",
+      "topLeft", "topRightBlock", "bottomLeftBlock", "bottomRightBlock", "concrete"
+    };
+    auto pTextureAtlas = resourceManager.LoadTextureAtlas("DefaulTextureAtlas", "res/textures/map_16x16.png", std::move(subTexturesNames), 16, 16);
+    auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaulTextureAtlas", "SpriteShader", 100, 100, "block");
     pSprite->SetPosition(glm::vec2(200, 100));
 
     GLuint points_vbo = 0;

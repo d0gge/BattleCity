@@ -1,4 +1,6 @@
 #include "Texture2D.h"
+#include <iostream>
+#include <glm/vec2.hpp>
 #include <memory>
 
 namespace Renderer
@@ -61,5 +63,31 @@ Texture2D::~Texture2D()
 void Texture2D::Bind() const
 {
   glBindTexture(GL_TEXTURE_2D, m_Id);
+}
+void Texture2D::AddSubTexture(const std::string subTextureName, const glm::vec2& leftBottomUV,
+                              const glm::vec2& rightTopUV)
+{
+  m_SubTexturesMap.emplace(std::move(subTextureName), SubTexture2D(leftBottomUV, rightTopUV));
+}
+
+const Texture2D::SubTexture2D& Texture2D::GetSubTexture(const std::string& subTextureName) const
+{
+  auto it = m_SubTexturesMap.find(subTextureName);
+  if (it != m_SubTexturesMap.end())
+  {
+    return it->second;
+  }
+  const static Texture2D::SubTexture2D defaultSubTexture;
+  return defaultSubTexture;
+}
+
+uint32_t Texture2D::GetWidth() const
+{
+  return m_Width;
+}
+
+uint32_t Texture2D::GetHeight() const
+{
+  return m_Height;
 }
 } // namespace Renderer

@@ -1,7 +1,9 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <stdint.h>
 #include <string>
+#include <vector>
 
 namespace Renderer
 {
@@ -29,7 +31,13 @@ public:
   std::shared_ptr<Renderer::Sprite> GetSprite(const std::string& spriteName) const;
   std::shared_ptr<Renderer::Sprite> LoadSprite(const std::string& spriteName, const std::string& textureName,
                                                const std::string& shaderName, const unsigned int spriteWidth,
-                                               const unsigned int spriteHeight);
+                                               const unsigned int spriteHeight,
+                                               const std::string& subTextureName = "default");
+
+  std::shared_ptr<Renderer::Texture2D> LoadTextureAtlas(const std::string textureName, const std::string texturePath,
+                                                        std::vector<std::string> subTextures,
+                                                        const uint32_t subTextureWidth,
+                                                        const uint32_t subTextureHeight);
 
 private:
   std::string GetFileString(const std::string& relativePath) const;
